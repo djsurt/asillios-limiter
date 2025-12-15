@@ -1,7 +1,7 @@
 # asillios-limiter
 
-**asillios.com**
-
+[**asillios.com**
+](https://www.asillios.com/)
 rate limiting and usage tracking for llm-powered apps. works with openai and anthropic out of the box.
 
 asillios-limiter is a typescript library for controlling and monitoring api usage in apps that use large language models like claude or gpt. when you build an app that lets users interact with an llm, you're paying for every token they use. this library wraps your llm calls and automatically tracks how many tokens each user consumes, letting you set limits and get alerts when users approach their quotas. it works with both anthropic and openai response formats out of the box.
