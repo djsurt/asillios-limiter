@@ -9,7 +9,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Asillios",
-  description: "Asillios",
+  description: "Asillios is an open source TypeScript library for per-user rate limiting, usage stats, and threshold alerts.",
   icons: {
     icon: "/greek.png",
   },
