@@ -88,9 +88,13 @@ export function FeaturesSectionDemo() {
               Give users free tiers without getting surprised by a massive API bill.
             </p>
 
-            <p className="text-sm md:text-base text-neutral-400 font-normal leading-relaxed mb-8">
+            <p className="text-sm md:text-base text-neutral-400 font-normal leading-relaxed mb-4">
               Asillios is an open source TypeScript library for per-user rate limiting, usage stats, and threshold alerts.
             </p>
+
+            <a href="https://www.npmjs.com/package/asillios-limiter" target="_blank" className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors mb-8 block">
+              95+ downloads on npm
+            </a>
 
             <div id="install" className="flex flex-col sm:flex-row items-start gap-4 mb-8 scroll-mt-20">
               <div
