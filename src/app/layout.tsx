@@ -10,6 +10,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Asillios Rate Limiter",
   description: "Asillios Rate Limiter",
+  icons: {
+    icon: "/greek.png",
+  },
 };
 
 export default function RootLayout({
