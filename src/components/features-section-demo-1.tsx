@@ -70,9 +70,9 @@ export function FeaturesSectionDemo() {
         >
           <a href="/" className="font-medium text-sm hover:text-neutral-300 transition-colors">Asillios</a>
           <div className="h-4 w-px bg-neutral-700" />
-          <a href="#install" className="text-neutral-400 hover:text-white transition-colors text-sm">Install</a>
-          <a href="#features" className="text-neutral-400 hover:text-white transition-colors text-sm">Features</a>
-          <a href="#quickstart" className="text-neutral-400 hover:text-white transition-colors text-sm">Quickstart</a>
+          <button onClick={() => document.getElementById('install')?.scrollIntoView({ behavior: 'smooth' })} className="text-neutral-400 hover:text-white transition-colors text-sm">Install</button>
+          <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="text-neutral-400 hover:text-white transition-colors text-sm">Features</button>
+          <button onClick={() => document.getElementById('quickstart')?.scrollIntoView({ behavior: 'smooth' })} className="text-neutral-400 hover:text-white transition-colors text-sm">Quickstart</button>
         </HoverBorderGradient>
       </div>
 
