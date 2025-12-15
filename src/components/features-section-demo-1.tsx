@@ -42,11 +42,20 @@ export function FeaturesSectionDemo() {
     },
   ];
   const [copied, setCopied] = React.useState(false);
+  const [promptCopied, setPromptCopied] = React.useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText('npm install asillios-limiter');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const claudePrompt = `Add rate limiting to my app using asillios-limiter. Install the package (ex. npm install asillios-limiter) and wrap my LLM API calls with the limiter. Set up a limit of 100k tokens per hour per user, with threshold alerts at 80%, 90%, and 100%. Use the limiter.wrap() function to automatically track token usage from OpenAI or Anthropic responses.`;
+
+  const handlePromptCopy = () => {
+    navigator.clipboard.writeText(claudePrompt);
+    setPromptCopied(true);
+    setTimeout(() => setPromptCopied(false), 2000);
   };
 
   return (
@@ -117,6 +126,31 @@ export function FeaturesSectionDemo() {
             <GitHubLogo />
             <span>View on GitHub</span>
           </HoverBorderGradient>
+        </div>
+
+        {/* Claude Code Prompt */}
+        <div className="mt-8 max-w-2xl mx-auto">
+          <p className="text-neutral-500 text-xs text-center mb-3">Copy this prompt to add rate limiting with Claude Code, Cursor, or any other AI assistant.</p>
+          <div
+            onClick={handlePromptCopy}
+            className="relative bg-neutral-900 border border-neutral-800 rounded-lg p-4 cursor-pointer hover:border-neutral-700 transition-colors group"
+          >
+            <p className="text-neutral-400 text-sm pr-8 leading-relaxed">
+              {claudePrompt}
+            </p>
+            <div className="absolute top-3 right-3 text-neutral-500 group-hover:text-white transition-colors">
+              {promptCopied ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                </svg>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
