@@ -18,14 +18,14 @@ export function FeaturesSectionDemo() {
         "Wrap your LLM calls with a few lines of code. Auto-detects OpenAI and Anthropic response formats.",
       skeleton: <SkeletonOne />,
       className:
-        "col-span-1 lg:col-span-4 border-b lg:border-r dark:border-neutral-800",
+        "col-span-1 md:col-span-1 lg:col-span-4 border-b md:border-r lg:border-r border-neutral-800",
     },
     {
       title: "Per-User Tracking",
       description:
         "Track token consumption per user. Set limits, get alerts when users approach quotas, identify power users.",
       skeleton: <SkeletonTwo />,
-      className: "border-b col-span-1 lg:col-span-2 dark:border-neutral-800",
+      className: "col-span-1 md:col-span-1 lg:col-span-2 border-b border-neutral-800",
     },
     {
       title: "Threshold Alerts",
@@ -33,14 +33,14 @@ export function FeaturesSectionDemo() {
         "Get notified at 80%, 90%, 100% usage. Custom callbacks for billing integration or user notifications.",
       skeleton: <SkeletonThree />,
       className:
-        "col-span-1 lg:col-span-3 lg:border-r dark:border-neutral-800",
+        "col-span-1 md:col-span-1 lg:col-span-3 border-b md:border-b lg:border-b-0 md:border-r lg:border-r border-neutral-800",
     },
     {
       title: "Production Ready",
       description:
         "In-memory storage by default. Plug in Redis or any database with the StorageAdapter interface.",
       skeleton: <SkeletonFour />,
-      className: "col-span-1 lg:col-span-3 border-b lg:border-none",
+      className: "col-span-1 md:col-span-1 lg:col-span-3 border-neutral-800",
     },
   ];
   const [copied, setCopied] = React.useState(false);
@@ -183,8 +183,8 @@ export function FeaturesSectionDemo() {
         </div>
       </div>
 
-      <div id="features" className="relative scroll-mt-20">
-        <div className="grid grid-cols-1 lg:grid-cols-6 mt-6 xl:border rounded-md dark:border-neutral-800">
+      <div id="features" className="relative scroll-mt-20 px-4 md:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 mt-6 border rounded-md border-neutral-800">
           {features.map((feature) => (
             <FeatureCard key={feature.title} className={feature.className}>
               <FeatureTitle>{feature.title}</FeatureTitle>
