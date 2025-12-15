@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Highlight, themes } from "prism-react-renderer";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
+import Image from "next/image";
 
 export function FeaturesSectionDemo() {
   const features = [
@@ -50,7 +51,7 @@ export function FeaturesSectionDemo() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const claudePrompt = `Add rate limiting to my app using asillios-limiter. Install the package (ex. npm install asillios-limiter) look at the docs at asillios.comand wrap my LLM API calls with the limiter. Set up a limit of 100k tokens per hour per user, with threshold alerts at 80%, 90%, and 100%. Use the limiter.wrap() function to automatically track token usage from OpenAI or Anthropic responses.`;
+  const claudePrompt = `Add rate limiting to my app using asillios-limiter. Install the package (ex. npm install asillios-limiter) look at the docs at asillios.com and wrap my LLM API calls with the limiter. Set up a limit of 100k tokens per hour per user, with threshold alerts at 80%, 90%, and 100%. Use the limiter.wrap() function to automatically track token usage from OpenAI or Anthropic responses.`;
 
   const handlePromptCopy = () => {
     navigator.clipboard.writeText(claudePrompt);
@@ -76,80 +77,99 @@ export function FeaturesSectionDemo() {
       </div>
 
       <div className="pt-20 pb-12 lg:pt-32 lg:pb-16 px-8">
-        <h1 className="text-5xl md:text-7xl lg:text-8xl max-w-5xl mx-auto text-center tracking-tight font-medium text-white mb-6">
-        Asillios 
-        </h1>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left: Content */}
+          <div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl tracking-tight font-medium text-white mb-6">
+              Asillios
+            </h1>
 
-        <p className="text-lg md:text-xl lg:text-2xl max-w-3xl my-6 mx-auto text-neutral-300 text-center font-normal leading-snug">
-          Rate limiting and usage tracking for LLM-powered apps. Works with OpenAI and Anthropic out of the box.
-        </p>
+            <p className="text-lg md:text-xl text-neutral-300 font-normal leading-snug mb-4">
+              Rate limiting and usage tracking for LLM-powered apps. Works with OpenAI and Anthropic out of the box.
+            </p>
 
-        <p className="text-sm md:text-base max-w-2xl mx-auto text-neutral-400 text-center font-normal leading-relaxed">
-          Give users free tiers without getting surprised by a massive API bill. Drop in a few lines of code for per-user rate limiting, usage stats, and threshold alerts.
-        </p>
+            <p className="text-sm md:text-base text-neutral-400 font-normal leading-relaxed mb-8">
+              Give users free tiers without getting surprised by a massive API bill. Drop in a few lines of code for per-user rate limiting, usage stats, and threshold alerts.
+            </p>
 
-        <div id="install" className="flex flex-col sm:flex-row justify-center items-center gap-4 my-8 scroll-mt-20">
-          <div
-            onClick={handleCopy}
-            className="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-lg font-mono text-sm md:text-base cursor-pointer transition-all"
-          >
-            <span>npm install asillios-limiter</span>
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="opacity-70"
-            >
-              {copied ? (
-                <path d="M20 6L9 17l-5-5" />
-              ) : (
-                <>
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                </>
-              )}
-            </svg>
+            <div id="install" className="flex flex-col sm:flex-row items-start gap-4 mb-8 scroll-mt-20">
+              <div
+                onClick={handleCopy}
+                className="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-lg font-mono text-sm cursor-pointer transition-all"
+              >
+                <span>npm install asillios-limiter</span>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="opacity-70"
+                >
+                  {copied ? (
+                    <path d="M20 6L9 17l-5-5" />
+                  ) : (
+                    <>
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                    </>
+                  )}
+                </svg>
+              </div>
+
+              <HoverBorderGradient
+                containerClassName="rounded-full"
+                as="a"
+                href="https://github.com/audgeviolin07/asillios-limiter"
+                target="_blank"
+                className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-2 px-6 py-3"
+              >
+                <GitHubLogo />
+                <span>View on GitHub</span>
+              </HoverBorderGradient>
+            </div>
+
+            {/* Claude Code Prompt */}
+            <div>
+              <p className="text-neutral-500 text-xs mb-3">Copy this prompt to add rate limiting with Claude Code, Cursor, or any other AI assistant.</p>
+              <div
+                onClick={handlePromptCopy}
+                className="relative bg-neutral-900 border border-neutral-800 rounded-lg p-4 cursor-pointer hover:border-neutral-700 transition-colors group"
+              >
+                <p className="text-neutral-400 text-sm pr-8 leading-relaxed">
+                  {claudePrompt}
+                </p>
+                <div className="absolute top-3 right-3 text-neutral-500 group-hover:text-white transition-colors">
+                  {promptCopied ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                    </svg>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
-          <HoverBorderGradient
-            containerClassName="rounded-full"
-            as="a"
-            href="https://github.com/audgeviolin07/asillios-limiter"
-            target="_blank"
-            className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-2 px-6 py-3"
-          >
-            <GitHubLogo />
-            <span>View on GitHub</span>
-          </HoverBorderGradient>
-        </div>
-
-        {/* Claude Code Prompt */}
-        <div className="mt-8 max-w-2xl mx-auto">
-          <p className="text-neutral-500 text-xs text-center mb-3">Copy this prompt to add rate limiting with Claude Code, Cursor, or any other AI assistant.</p>
-          <div
-            onClick={handlePromptCopy}
-            className="relative bg-neutral-900 border border-neutral-800 rounded-lg p-4 cursor-pointer hover:border-neutral-700 transition-colors group"
-          >
-            <p className="text-neutral-400 text-sm pr-8 leading-relaxed">
-              {claudePrompt}
+          {/* Right: Greek Image */}
+          <div className="hidden lg:flex flex-col items-center justify-center">
+            <Image
+              src="/greek.png"
+              alt="Greek sanctuary illustration"
+              width={400}
+              height={400}
+              className="opacity-80"
+            />
+            <p className="text-sm text-neutral-500 text-center mt-6 max-w-sm leading-relaxed">
+              The name comes from the Greek <em>ásylon</em>, a sacred refuge where nothing could be seized. Asillios (a- without + sill- seizure + -ios one who is) is your software&apos;s sanctuary from unexpected costs.
             </p>
-            <div className="absolute top-3 right-3 text-neutral-500 group-hover:text-white transition-colors">
-              {promptCopied ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                </svg>
-              )}
-            </div>
           </div>
         </div>
       </div>
@@ -257,11 +277,6 @@ const limiter = createLimiter({
         />
       </div>
 
-      <div className="mt-20 px-8">
-        <p className="text-xs md:text-sm max-w-2xl mx-auto text-neutral-600 text-center font-normal leading-relaxed">
-          The name comes from the Greek <em>ásylon</em>, a sacred refuge where nothing could be seized. Asillios (a- without + sill- seizure + -ios one who is) is your software&apos;s sanctuary from unexpected costs.
-        </p>
-      </div>
     </div>
   );
 }
