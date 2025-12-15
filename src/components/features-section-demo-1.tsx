@@ -137,7 +137,7 @@ export function FeaturesSectionDemo() {
                 className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-2 px-6 py-3"
               >
                 <GitHubLogo />
-                <span>View on GitHub</span>
+                <span>Star on GitHub</span>
               </HoverBorderGradient>
             </div>
 
