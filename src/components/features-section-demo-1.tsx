@@ -100,7 +100,11 @@ export function FeaturesSectionDemo() {
             <div id="install" className="flex flex-col sm:flex-row items-start gap-4 mb-8 scroll-mt-20">
               <div
                 onClick={handleCopy}
-                className="inline-flex items-center gap-3 bg-teal-900/30 hover:bg-teal-800/50 border border-teal-700/50 hover:border-teal-500 text-white px-6 py-3 rounded-lg font-mono text-sm cursor-pointer transition-all"
+                className="inline-flex items-center gap-3 bg-teal-900 hover:bg-teal-800 border border-teal-700 hover:border-teal-500 text-white px-6 py-3 rounded-lg font-mono text-sm cursor-pointer transition-all relative overflow-hidden"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+                  backgroundBlendMode: 'overlay',
+                }}
               >
                 <span>npm install asillios-limiter</span>
                 <svg
