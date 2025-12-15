@@ -2,6 +2,7 @@
 
 [**asillios.com**
 ](https://www.asillios.com/)
+<img width="1620" height="923" alt="Screenshot 2025-12-15 at 10 55 50 am" src="https://github.com/user-attachments/assets/0c95af77-1602-4fe3-b52f-5b7ebb59c620" />
 
 rate limiting and usage tracking for llm-powered apps. works with openai and anthropic out of the box.
 
