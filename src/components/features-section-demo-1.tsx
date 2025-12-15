@@ -85,7 +85,7 @@ export function FeaturesSectionDemo() {
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-300 font-normal leading-snug mb-8">
-              Rate limiting and usage tracking for LLM apps. Per-user limits, threshold alerts, and works with OpenAI and Anthropic out of the box.
+              Give users free tiers without getting surprised by a massive API bill. Drop in a few lines of code for per-user rate limiting, usage stats, and threshold alerts.
             </p>
 
             <div id="install" className="flex flex-col sm:flex-row items-start gap-4 mb-8 scroll-mt-20">
@@ -164,7 +164,7 @@ export function FeaturesSectionDemo() {
               className="opacity-80"
             />
             <p className="text-sm text-neutral-500 text-center mt-6 max-w-sm leading-relaxed">
-              The name comes from the Greek <em>ásylon</em>, a sacred refuge where nothing could be seized. Asillios (a- without + sill- seizure + -ios one who is) is your software&apos;s sanctuary from unexpected costs.
+              The name comes from the Greek <em className="text-neutral-200 not-italic">ásylon</em>, a <span className="text-neutral-200">sacred refuge</span> where nothing could be seized. <span className="text-neutral-200">Asillios</span> (a- without + sill- seizure + -ios one who is) is your software&apos;s <span className="text-neutral-200">sanctuary</span> from unexpected costs.
             </p>
           </div>
         </div>
