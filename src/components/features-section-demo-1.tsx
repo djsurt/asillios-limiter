@@ -396,7 +396,7 @@ export const SkeletonOne = () => {
   }, []);
 
   return (
-    <div className="relative flex pt-0 pb-4 h-full items-start justify-center">
+    <div className="relative flex py-6 h-full items-start justify-center">
       <div className="text-center w-full px-4">
         <div className="text-4xl md:text-6xl font-mono text-white mb-2">{progress}%</div>
         <div className="w-full max-w-[200px] md:max-w-[280px] mx-auto h-3 bg-neutral-800 rounded-full overflow-hidden">
@@ -448,9 +448,9 @@ export const SkeletonThree = () => {
 
   useEffect(() => {
     const thresholds = [
-      { pct: '80%', shade: 'bg-teal-900/50 border-teal-700 text-white' },
-      { pct: '90%', shade: 'bg-teal-800/50 border-teal-600 text-white' },
-      { pct: '100%', shade: 'bg-teal-700/50 border-teal-500 text-white' },
+      { pct: '80%', shade: 'bg-teal-900 border-teal-700 text-white' },
+      { pct: '90%', shade: 'bg-teal-800 border-teal-600 text-white' },
+      { pct: '100%', shade: 'bg-teal-700 border-teal-500 text-white' },
     ];
     let index = 0;
     const interval = setInterval(() => {
@@ -511,9 +511,9 @@ export const Globe = ({ className }: { className?: string }) => {
       diffuse: 1.2,
       mapSamples: 16000,
       mapBrightness: 6,
-      baseColor: [0.3, 0.3, 0.3],
-      markerColor: [0.05, 0.58, 0.53],
-      glowColor: [1, 1, 1],
+      baseColor: [0.07, 0.31, 0.29],
+      markerColor: [0.08, 0.55, 0.52],
+      glowColor: [0.08, 0.46, 0.43],
       markers: [
         { location: [37.7595, -122.4367], size: 0.03 },
         { location: [40.7128, -74.006], size: 0.1 },
