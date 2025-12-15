@@ -6,6 +6,7 @@ import createGlobe from "cobe";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Highlight, themes } from "prism-react-renderer";
+import { HoverBorderGradient } from "./ui/hover-border-gradient";
 
 export function FeaturesSectionDemo() {
   const features = [
@@ -49,8 +50,23 @@ export function FeaturesSectionDemo() {
   };
 
   return (
-    <div className="relative z-20 py-20 lg:py-32 max-w-7xl mx-auto">
-      <div className="px-8">
+    <div className="relative z-20 max-w-7xl mx-auto">
+      {/* Navbar */}
+      <div className="sticky top-4 z-50 flex justify-center px-4">
+        <HoverBorderGradient
+          containerClassName="rounded-full"
+          as="nav"
+          className="dark:bg-black bg-black text-white px-6 py-2 flex items-center gap-6"
+        >
+          <a href="#" className="font-medium text-sm hover:text-neutral-300 transition-colors">Asillios</a>
+          <div className="h-4 w-px bg-neutral-700" />
+          <a href="#install" className="text-neutral-400 hover:text-white transition-colors text-sm">Install</a>
+          <a href="#features" className="text-neutral-400 hover:text-white transition-colors text-sm">Features</a>
+          <a href="#quickstart" className="text-neutral-400 hover:text-white transition-colors text-sm">Quickstart</a>
+        </HoverBorderGradient>
+      </div>
+
+      <div className="py-12 lg:py-20 px-8">
         <h1 className="text-5xl md:text-7xl lg:text-8xl max-w-5xl mx-auto text-center tracking-tight font-medium text-white mb-6">
         Asillios 
         </h1>
@@ -63,7 +79,7 @@ export function FeaturesSectionDemo() {
           Give users free tiers without getting surprised by a massive API bill. Drop in a few lines of code for per-user rate limiting, usage stats, and threshold alerts.
         </p>
 
-        <div className="flex justify-center my-8">
+        <div id="install" className="flex flex-col sm:flex-row justify-center items-center gap-4 my-8 scroll-mt-20">
           <div
             onClick={handleCopy}
             className="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-lg font-mono text-sm md:text-base cursor-pointer transition-all"
@@ -90,10 +106,21 @@ export function FeaturesSectionDemo() {
               )}
             </svg>
           </div>
+
+          <HoverBorderGradient
+            containerClassName="rounded-full"
+            as="a"
+            href="https://github.com/audgeviolin07/asillios-limiter"
+            target="_blank"
+            className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-2 px-6 py-3"
+          >
+            <GitHubLogo />
+            <span>View on GitHub</span>
+          </HoverBorderGradient>
         </div>
       </div>
 
-      <div className="relative">
+      <div id="features" className="relative scroll-mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-6 mt-12 xl:border rounded-md dark:border-neutral-800">
           {features.map((feature) => (
             <FeatureCard key={feature.title} className={feature.className}>
@@ -106,7 +133,7 @@ export function FeaturesSectionDemo() {
       </div>
 
       {/* Code Examples Section */}
-      <div className="mt-20 px-4 md:px-8 space-y-8">
+      <div id="quickstart" className="mt-20 px-4 md:px-8 space-y-8 scroll-mt-20">
         <h2 className="text-2xl md:text-3xl font-medium text-white text-center mb-12">Quick Start</h2>
 
         <CodeBlock
@@ -300,7 +327,7 @@ export const SkeletonOne = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => (prev >= 100 ? 0 : prev + 1));
-    }, 50);
+    }, 150);
     return () => clearInterval(interval);
   }, []);
 
@@ -443,6 +470,20 @@ export const Globe = ({ className }: { className?: string }) => {
       style={{ width: 600, height: 600, maxWidth: "100%", aspectRatio: 1 }}
       className={className}
     />
+  );
+};
+
+const GitHubLogo = () => {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+    </svg>
   );
 };
 
