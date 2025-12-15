@@ -109,18 +109,46 @@ const FeatureDescription = ({ children }: { children?: React.ReactNode }) => {
 };
 
 export const SkeletonOne = () => {
+  const [progress, setProgress] = React.useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => (prev >= 100 ? 0 : prev + 1));
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
+  const current = Math.floor((progress / 100) * 1000);
+  const remaining = 1000 - current;
+  const barLength = 15;
+  const filledLength = Math.floor((progress / 100) * barLength);
+  const progressBar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
+
+  const asciiComputer = `
+    ╔══════════════════════════════════╗
+    ║  ┌────────────────────────────┐  ║
+    ║  │  $ api-limiter status      │  ║
+    ║  │                            │  ║
+    ║  │  ✓ Rate limit: 1000/min    │  ║
+    ║  │  ✓ Current:    ${String(current).padStart(4, ' ')}/min     │  ║
+    ║  │  ✓ Remaining:  ${String(remaining).padStart(4, ' ')}         │  ║
+    ║  │                            │  ║
+    ║  │  [${progressBar}] ${String(progress).padStart(3, ' ')}%   │  ║
+    ║  │                            │  ║
+    ║  └────────────────────────────┘  ║
+    ╚══════════════════════════════════╝
+           ╔════════════════╗
+           ╚════════════════╝
+      ┌─────────────────────────────┐
+      └─────────────────────────────┘
+  `;
+
   return (
     <div className="relative flex py-8 px-2 gap-10 h-full">
-      <div className="w-full p-5 mx-auto bg-white dark:bg-neutral-900 shadow-2xl group h-full">
-        <div className="flex flex-1 w-full h-full flex-col space-y-2">
-          <Image
-            src="/linear.webp"
-            alt="header"
-            width={800}
-            height={800}
-            className="h-full w-full aspect-square object-cover object-left-top rounded-sm"
-          />
-        </div>
+      <div className="w-full p-5 mx-auto h-full flex items-center justify-center">
+        <pre className="text-white text-xs md:text-sm font-mono leading-tight">
+          {asciiComputer}
+        </pre>
       </div>
 
       <div className="absolute bottom-0 z-40 inset-x-0 h-60 bg-gradient-to-t from-white dark:from-black via-white dark:via-black to-transparent w-full pointer-events-none" />
