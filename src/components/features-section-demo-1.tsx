@@ -50,7 +50,7 @@ export function FeaturesSectionDemo() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const claudePrompt = `Add rate limiting to my app using asillios-limiter. Install the package (ex. npm install asillios-limiter) and wrap my LLM API calls with the limiter. Set up a limit of 100k tokens per hour per user, with threshold alerts at 80%, 90%, and 100%. Use the limiter.wrap() function to automatically track token usage from OpenAI or Anthropic responses.`;
+  const claudePrompt = `Add rate limiting to my app using asillios-limiter. Install the package (ex. npm install asillios-limiter) look at the docs at asillios.comand wrap my LLM API calls with the limiter. Set up a limit of 100k tokens per hour per user, with threshold alerts at 80%, 90%, and 100%. Use the limiter.wrap() function to automatically track token usage from OpenAI or Anthropic responses.`;
 
   const handlePromptCopy = () => {
     navigator.clipboard.writeText(claudePrompt);
