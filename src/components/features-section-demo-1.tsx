@@ -505,7 +505,7 @@ export const Globe = ({ className }: { className?: string }) => {
       diffuse: 1.2,
       mapSamples: 16000,
       mapBrightness: 6,
-      baseColor: [0.07, 0.31, 0.29],
+      baseColor: [0.3, 0.3, 0.3],
       markerColor: [0.08, 0.55, 0.52],
       glowColor: [0.08, 0.46, 0.43],
       markers: [
