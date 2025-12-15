@@ -389,15 +389,16 @@ export const SkeletonOne = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const barLength = 20;
-  const filledLength = Math.floor((progress / 100) * barLength);
-  const progressBar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
-
   return (
     <div className="relative flex py-8 h-full items-center justify-center">
-      <div className="text-center">
+      <div className="text-center w-full px-4">
         <div className="text-4xl md:text-6xl font-mono text-white mb-2">{progress}%</div>
-        <div className="text-neutral-500 font-mono text-xs md:text-sm">[{progressBar}]</div>
+        <div className="w-full max-w-[200px] md:max-w-[280px] mx-auto h-3 bg-neutral-800 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-teal-500 rounded-full transition-all duration-150"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
         <div className="text-neutral-600 text-xs mt-2">tokens used this window</div>
       </div>
       <div className="absolute bottom-0 z-40 inset-x-0 h-20 bg-gradient-to-t from-black to-transparent w-full pointer-events-none" />
