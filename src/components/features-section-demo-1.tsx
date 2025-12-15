@@ -8,6 +8,7 @@ import { motion } from "motion/react";
 import { Highlight, themes } from "prism-react-renderer";
 import { HoverBorderGradient } from "./ui/hover-border-gradient";
 import Image from "next/image";
+import ShinyText from "./ShinyText";
 
 export function FeaturesSectionDemo() {
   const features = [
@@ -80,8 +81,8 @@ export function FeaturesSectionDemo() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left: Content */}
           <div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl tracking-tight font-medium text-white mb-6">
-              Asillios
+            <h1 className="text-4xl md:text-5xl lg:text-6xl tracking-tight font-medium mb-6">
+              <ShinyText text="Asillios" speed={3} />
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-300 font-normal leading-snug mb-4">
@@ -99,7 +100,7 @@ export function FeaturesSectionDemo() {
             <div id="install" className="flex flex-col sm:flex-row items-start gap-4 mb-8 scroll-mt-20">
               <div
                 onClick={handleCopy}
-                className="inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-lg font-mono text-sm cursor-pointer transition-all"
+                className="inline-flex items-center gap-3 bg-teal-900/30 hover:bg-teal-800/50 border border-teal-700/50 hover:border-teal-500 text-white px-6 py-3 rounded-lg font-mono text-sm cursor-pointer transition-all"
               >
                 <span>npm install asillios-limiter</span>
                 <svg
@@ -141,7 +142,7 @@ export function FeaturesSectionDemo() {
               <p className="text-neutral-500 text-xs mb-3">Copy this prompt to add rate limiting with Claude Code, Cursor, or any other AI assistant.</p>
               <div
                 onClick={handlePromptCopy}
-                className="relative bg-neutral-900 border border-neutral-800 rounded-lg p-4 cursor-pointer hover:border-neutral-700 transition-colors group"
+                className="relative bg-neutral-900 border border-neutral-800 rounded-lg p-4 cursor-pointer hover:border-teal-600 transition-colors group"
               >
                 <p className="text-neutral-400 text-sm pr-8 leading-relaxed">
                   {claudePrompt}
@@ -300,7 +301,7 @@ const CodeBlock = ({ title, code }: { title: string; code: string }) => {
         <span className="text-sm text-neutral-400">{title}</span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-2 text-xs text-neutral-400 hover:text-white transition-colors px-2 py-1 rounded hover:bg-white/10"
+          className="flex items-center gap-2 text-xs text-neutral-400 hover:text-white transition-colors px-2 py-1 rounded hover:bg-teal-700/30"
         >
           {copied ? (
             <>
@@ -354,7 +355,7 @@ const FeatureCard = ({
 
 const FeatureTitle = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <p className="max-w-5xl mx-auto text-left tracking-tight text-black dark:text-white text-xl md:text-2xl md:leading-snug">
+    <p className="max-w-5xl mx-auto text-left tracking-tight text-white text-xl md:text-2xl md:leading-snug">
       {children}
     </p>
   );
@@ -402,10 +403,10 @@ export const SkeletonOne = () => {
 
 export const SkeletonTwo = () => {
   const users = [
-    { id: 'user-a', usage: 85, shade: 'bg-neutral-200' },
-    { id: 'user-b', usage: 42, shade: 'bg-neutral-400' },
-    { id: 'user-c', usage: 91, shade: 'bg-neutral-300' },
-    { id: 'user-d', usage: 23, shade: 'bg-neutral-500' },
+    { id: 'user-a', usage: 85, shade: 'bg-teal-500' },
+    { id: 'user-b', usage: 42, shade: 'bg-teal-700' },
+    { id: 'user-c', usage: 91, shade: 'bg-teal-400' },
+    { id: 'user-d', usage: 23, shade: 'bg-teal-800' },
   ];
 
   return (
@@ -436,9 +437,9 @@ export const SkeletonThree = () => {
 
   useEffect(() => {
     const thresholds = [
-      { pct: '80%', shade: 'bg-neutral-700 border-neutral-600 text-neutral-300' },
-      { pct: '90%', shade: 'bg-neutral-600 border-neutral-500 text-neutral-200' },
-      { pct: '100%', shade: 'bg-neutral-500 border-neutral-400 text-neutral-100' },
+      { pct: '80%', shade: 'bg-teal-900/50 border-teal-700 text-white' },
+      { pct: '90%', shade: 'bg-teal-800/50 border-teal-600 text-white' },
+      { pct: '100%', shade: 'bg-teal-700/50 border-teal-500 text-white' },
     ];
     let index = 0;
     const interval = setInterval(() => {
@@ -500,7 +501,7 @@ export const Globe = ({ className }: { className?: string }) => {
       mapSamples: 16000,
       mapBrightness: 6,
       baseColor: [0.3, 0.3, 0.3],
-      markerColor: [0.1, 0.8, 1],
+      markerColor: [0.05, 0.58, 0.53],
       glowColor: [1, 1, 1],
       markers: [
         { location: [37.7595, -122.4367], size: 0.03 },

@@ -42,11 +42,11 @@ export default function FeaturesSectionDemo() {
   return (
     <div className="relative z-20 py-10 lg:py-40 max-w-7xl mx-auto">
       <div className="px-8">
-        <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium text-black dark:text-white">
+        <h4 className="text-3xl lg:text-5xl lg:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium text-white">
           Packed with thousands of features
         </h4>
 
-        <p className="text-sm lg:text-base  max-w-2xl  my-4 mx-auto text-neutral-500 text-center font-normal dark:text-neutral-300">
+        <p className="text-sm lg:text-base  max-w-2xl  my-4 mx-auto text-neutral-300 text-center font-normal">
           From Image generation to video generation, Everything AI has APIs for
           literally everything. It can even create this website copy for you.
         </p>
@@ -83,7 +83,7 @@ const FeatureCard = ({
 
 const FeatureTitle = ({ children }: { children?: React.ReactNode }) => {
   return (
-    <p className=" max-w-5xl mx-auto text-left tracking-tight text-black dark:text-white text-xl md:text-2xl md:leading-snug">
+    <p className=" max-w-5xl mx-auto text-left tracking-tight text-white text-xl md:text-2xl md:leading-snug">
       {children}
     </p>
   );
@@ -94,7 +94,7 @@ const FeatureDescription = ({ children }: { children?: React.ReactNode }) => {
     <p
       className={cn(
         "text-sm md:text-base  max-w-4xl text-left mx-auto",
-        "text-neutral-500 text-center font-normal dark:text-neutral-300",
+        "text-neutral-300 text-center font-normal",
         "text-left max-w-sm mx-0 md:text-sm my-2"
       )}
     >
@@ -251,7 +251,7 @@ export const Globe = ({ className }: { className?: string }) => {
       mapSamples: 16000,
       mapBrightness: 6,
       baseColor: [0.3, 0.3, 0.3],
-      markerColor: [0.1, 0.8, 1],
+      markerColor: [0.05, 0.58, 0.53],
       glowColor: [1, 1, 1],
       markers: [
         // longitude latitude
