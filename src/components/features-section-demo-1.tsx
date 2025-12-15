@@ -51,7 +51,7 @@ export function FeaturesSectionDemo() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const claudePrompt = `Add rate limiting to my app using asillios-limiter. Install the package (ex. npm install asillios-limiter) look at the docs at asillios.com and wrap my LLM API calls with the limiter. Set up a limit of 100k tokens per hour per user, with threshold alerts at 80%, 90%, and 100%. Use the limiter.wrap() function to automatically track token usage from OpenAI or Anthropic responses.`;
+  const claudePrompt = `Add rate limiting to my app using asillios-limiter. Install it (ex. npm install asillios-limiter) Use limiter.wrap() to track token usage from OpenAI or Anthropic. Docs at asillios.com.`;
 
   const handlePromptCopy = () => {
     navigator.clipboard.writeText(claudePrompt);
@@ -84,12 +84,8 @@ export function FeaturesSectionDemo() {
               Asillios
             </h1>
 
-            <p className="text-lg md:text-xl text-neutral-300 font-normal leading-snug mb-4">
-              Rate limiting and usage tracking for LLM-powered apps. Works with OpenAI and Anthropic out of the box.
-            </p>
-
-            <p className="text-sm md:text-base text-neutral-400 font-normal leading-relaxed mb-8">
-              Give users free tiers without getting surprised by a massive API bill. Drop in a few lines of code for per-user rate limiting, usage stats, and threshold alerts.
+            <p className="text-lg md:text-xl text-neutral-300 font-normal leading-snug mb-8">
+              Rate limiting and usage tracking for LLM apps. Per-user limits, threshold alerts, and works with OpenAI and Anthropic out of the box.
             </p>
 
             <div id="install" className="flex flex-col sm:flex-row items-start gap-4 mb-8 scroll-mt-20">
