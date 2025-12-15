@@ -390,7 +390,7 @@ export const SkeletonOne = () => {
   }, []);
 
   return (
-    <div className="relative flex py-8 h-full items-center justify-center">
+    <div className="relative flex py-4 h-full items-center justify-center">
       <div className="text-center w-full px-4">
         <div className="text-4xl md:text-6xl font-mono text-white mb-2">{progress}%</div>
         <div className="w-full max-w-[200px] md:max-w-[280px] mx-auto h-3 bg-neutral-800 rounded-full overflow-hidden">
