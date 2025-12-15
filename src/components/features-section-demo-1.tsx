@@ -68,7 +68,7 @@ export function FeaturesSectionDemo() {
           as="nav"
           className="dark:bg-black bg-black text-white px-6 py-2 flex items-center gap-6"
         >
-          <a href="#" className="font-medium text-sm hover:text-neutral-300 transition-colors">Asillios</a>
+          <a href="/" className="font-medium text-sm hover:text-neutral-300 transition-colors">Asillios</a>
           <div className="h-4 w-px bg-neutral-700" />
           <a href="#install" className="text-neutral-400 hover:text-white transition-colors text-sm">Install</a>
           <a href="#features" className="text-neutral-400 hover:text-white transition-colors text-sm">Features</a>
