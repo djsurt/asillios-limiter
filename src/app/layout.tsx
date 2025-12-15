@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Asillios Rate Limiter",
-  description: "Asillios Rate Limiter",
+  title: "Asillios",
+  description: "Asillios",
   icons: {
     icon: "/greek.png",
   },
