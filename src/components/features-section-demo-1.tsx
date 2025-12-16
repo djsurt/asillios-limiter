@@ -156,7 +156,7 @@ export function FeaturesSectionDemo() {
                 <GitHubLogo />
                 <span>Star on GitHub</span>
                 {starCount !== null && (
-                  <span className="bg-neutral-800 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                  <span className="text-base font-medium">
                     ⭐ {starCount}
                   </span>
                 )}
