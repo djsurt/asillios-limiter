@@ -12,40 +12,6 @@ asillios-limiter is a typescript library for controlling and monitoring api usag
 
 my intention is to give developers a simple way to offer free tiers without getting surprised by a massive api bill. instead of building custom usage tracking from scratch, you drop in a few lines of code and immediately have per user rate limiting, usage stats you can plug into any dashboard, and threshold alerts for identifying power users or potential abuse. it stores usage in memory by default but supports custom storage adapters for production use with redis or a database.
 
-Why this vs other rate limiters
-
-  Most rate limiters count requests (e.g., 100 requests/minute). That doesn't work well for LLMs because:
-
-  - A short prompt might use 500 tokens
-  - A long prompt might use 50,000 tokens
-  - Both count as "1 request" but cost 100x differently
-
-  asillios-limiter counts tokens, which directly maps to your API costs. You can give users a fair budget based on actual usage, not arbitrary request counts.
-
-  Also, it auto-extracts tokens from Anthropic/OpenAI responses — no manual tracking needed.
-
-
-Why TypeScript
-
-  - Autocomplete — your editor shows you what stats() returns, what config options exist
-  - Catch bugs early — typo limmit instead of limit? Error before you run it
-  - Self-documenting — types show exactly what the API expects and returns
-  - Works in JS too — the published package works in plain JavaScript, TypeScript just adds safety
-
-Server-side only
-
-  This is server-side only. Never use it client-side because:
-
-  1. Security — client-side code can be modified; users could bypass limits
-  2. API keys — your LLM API keys live on the server
-  3. Shared state — the limiter needs to track usage across all users in one place
-
-  Use it in:
-  - Next.js API routes (app/api/*/route.ts)
-  - Express/Fastify backends
-  - Any Node.js server
-
-  The client just makes requests to your API — your server checks limits and calls the LLM.
 
 ## install
 
