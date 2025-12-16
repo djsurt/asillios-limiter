@@ -45,6 +45,23 @@ export function FeaturesSectionDemo() {
   ];
   const [copied, setCopied] = React.useState(false);
   const [promptCopied, setPromptCopied] = React.useState(false);
+  const [starCount, setStarCount] = React.useState<number | null>(null);
+
+  // Fetch GitHub star count
+  useEffect(() => {
+    async function fetchStars() {
+      try {
+        const response = await fetch('/api/github/stars');
+        const data = await response.json();
+        if (data.stars !== null) {
+          setStarCount(data.stars);
+        }
+      } catch (error) {
+        console.error('Failed to fetch star count:', error);
+      }
+    }
+    fetchStars();
+  }, []);
 
   const handleCopy = () => {
     navigator.clipboard.writeText('npm install asillios-limiter');
@@ -138,6 +155,11 @@ export function FeaturesSectionDemo() {
               >
                 <GitHubLogo />
                 <span>Star on GitHub</span>
+                {starCount !== null && (
+                  <span className="bg-neutral-800 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                    ⭐ {starCount}
+                  </span>
+                )}
               </HoverBorderGradient>
             </div>
 
