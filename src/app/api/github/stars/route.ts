@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 const REPO_OWNER = "audgeviolin07";
 const REPO_NAME = "asillios-limiter";
 
+// Force dynamic - don't cache this route
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const response = await fetch(
@@ -15,7 +18,7 @@ export async function GET() {
             Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
           }),
         },
-        next: { revalidate: 60 }, // Cache for 60 seconds
+        cache: "no-store", // Don't cache the fetch
       }
     );
 
@@ -25,10 +28,17 @@ export async function GET() {
 
     const data = await response.json();
 
-    return NextResponse.json({
-      stars: data.stargazers_count,
-      url: data.html_url,
-    });
+    return NextResponse.json(
+      {
+        stars: data.stargazers_count,
+        url: data.html_url,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching GitHub stars:", error);
     return NextResponse.json(

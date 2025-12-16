@@ -51,7 +51,7 @@ export function FeaturesSectionDemo() {
   useEffect(() => {
     async function fetchStars() {
       try {
-        const response = await fetch('/api/github/stars');
+        const response = await fetch('/api/github/stars', { cache: 'no-store' });
         const data = await response.json();
         if (data.stars !== null) {
           setStarCount(data.stars);
@@ -61,6 +61,9 @@ export function FeaturesSectionDemo() {
       }
     }
     fetchStars();
+    // Refresh star count every 30 seconds
+    const interval = setInterval(fetchStars, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleCopy = () => {
