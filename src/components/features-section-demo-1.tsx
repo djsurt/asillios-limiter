@@ -81,7 +81,7 @@ export function FeaturesSectionDemo() {
   };
 
   return (
-    <div className="relative z-20 max-w-7xl mx-auto">
+    <div className="relative z-20 max-w-7xl mx-auto pb-20">
       {/* Navbar */}
       <div className="sticky top-4 z-50 flex justify-center px-4">
         <HoverBorderGradient
