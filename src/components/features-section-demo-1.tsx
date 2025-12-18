@@ -485,7 +485,7 @@ export const SkeletonThree = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-start p-4 h-full overflow-hidden">
+    <div className="relative flex flex-col items-start p-4 h-[140px] overflow-hidden">
       <div className="space-y-2 w-full">
         {alerts.map((alert, i) => (
           <motion.div
