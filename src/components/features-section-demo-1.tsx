@@ -117,7 +117,7 @@ export function FeaturesSectionDemo() {
               199+ downloads on npm
             </a>
 
-            <div id="install" className="flex flex-col sm:flex-row items-start gap-4 mb-8 scroll-mt-20">
+            <div id="install" className="flex flex-col sm:flex-row items-center gap-4 mb-8 scroll-mt-20">
               <div
                 onClick={handleCopy}
                 className="inline-flex items-center gap-3 bg-teal-900 hover:bg-teal-800 border border-teal-700 hover:border-teal-500 text-white px-6 py-3 rounded-lg font-mono text-sm cursor-pointer transition-all relative overflow-hidden"
