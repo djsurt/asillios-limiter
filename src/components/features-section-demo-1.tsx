@@ -114,7 +114,7 @@ export function FeaturesSectionDemo() {
             </p>
 
             <a href="https://www.npmjs.com/package/asillios-limiter" target="_blank" className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors mb-8 block">
-              199+ downloads on npm
+              215+ downloads on npm
             </a>
 
             <div id="install" className="flex flex-col sm:flex-row items-center gap-4 mb-8 scroll-mt-20">
