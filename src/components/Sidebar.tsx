@@ -179,10 +179,18 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-neutral-800">
-              <p className="text-xs text-neutral-600 text-center">
-                Open Source
-              </p>
+            <div className="p-4 border-t border-neutral-800 flex justify-center">
+              <a
+                href="https://github.com/audgeviolin07/asillios-limiter/blob/main/LICENSE"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="https://img.shields.io/github/license/audgeviolin07/asillios-limiter?style=flat&color=0d9488"
+                  alt="MIT License"
+                  className="h-5"
+                />
+              </a>
             </div>
           </motion.aside>
         )}
