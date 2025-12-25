@@ -1,5 +1,11 @@
 # asillios-limiter
 
+[![npm version](https://img.shields.io/npm/v/asillios-limiter)](https://www.npmjs.com/package/asillios-limiter)
+[![license](https://img.shields.io/npm/l/asillios-limiter)](https://github.com/audgeviolin07/asillios-limiter/blob/main/LICENSE)
+[![downloads](https://img.shields.io/npm/dm/asillios-limiter)](https://www.npmjs.com/package/asillios-limiter)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/asillios-limiter)](https://bundlephobia.com/package/asillios-limiter)
+
 YOU DON'T WANT A BIG SURPRISE BILL FROM OPENAI OR ANTHROPIC API WHEN U GIVE FREE TIERS
 
 [**asillios.com**
