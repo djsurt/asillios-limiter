@@ -5,9 +5,7 @@ export default function Home() {
   return (
     <div className="dark bg-black min-h-screen">
       <Sidebar />
-      <div className="lg:pl-56">
-        <FeaturesSectionDemo />
-      </div>
+      <FeaturesSectionDemo />
     </div>
   );
 }

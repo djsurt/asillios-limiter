@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 
 const navItems = [
@@ -32,6 +32,7 @@ const externalLinks = [
 ];
 
 export default function Sidebar() {
+  const [isOpen, setIsOpen] = React.useState(false);
   const [activeSection, setActiveSection] = React.useState('');
 
   React.useEffect(() => {
@@ -63,85 +64,141 @@ export default function Sidebar() {
   };
 
   return (
-    <motion.aside
-      initial={{ x: -100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="fixed left-0 top-0 h-screen w-56 bg-black border-r border-neutral-800 z-50 hidden lg:flex flex-col"
-    >
-      {/* Logo */}
-      <div className="p-6 border-b border-neutral-800">
-        <a href="/" className="flex items-center gap-3">
-          <Image
-            src="/greek.png"
-            alt="Asillios"
-            width={32}
-            height={32}
-            className="opacity-80"
+    <>
+      {/* Toggle Button - Always visible */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed left-4 top-4 z-50 hidden lg:flex items-center justify-center w-10 h-10 bg-neutral-900 border border-neutral-800 rounded-lg hover:bg-neutral-800 hover:border-neutral-700 transition-colors"
+        aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
+      >
+        <motion.svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-neutral-400"
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {isOpen ? (
+            <>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </>
+          ) : (
+            <>
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </>
+          )}
+        </motion.svg>
+      </button>
+
+      {/* Backdrop */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/50 z-40 hidden lg:block"
+            onClick={() => setIsOpen(false)}
           />
-          <span className="text-white font-medium text-lg">Asillios</span>
-        </a>
-      </div>
+        )}
+      </AnimatePresence>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-4">
-        <div className="space-y-1">
-          {navItems.map((item) => {
-            const isActive = activeSection === item.href.slice(1);
-            return (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href)}
-                className="relative block"
-              >
-                <motion.div
-                  className={`px-4 py-2.5 rounded-lg text-sm transition-colors ${
-                    isActive
-                      ? 'text-white bg-teal-900/50'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                  }`}
-                  whileHover={{ x: 4 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeIndicator"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-teal-500 rounded-full"
-                    />
-                  )}
-                  {item.label}
-                </motion.div>
+      {/* Sidebar */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.aside
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed left-0 top-0 h-screen w-56 bg-black border-r border-neutral-800 z-50 hidden lg:flex flex-col"
+          >
+            {/* Logo */}
+            <div className="p-6 border-b border-neutral-800">
+              <a href="/" className="flex items-center gap-3">
+                <Image
+                  src="/greek.png"
+                  alt="Asillios"
+                  width={32}
+                  height={32}
+                  className="opacity-80"
+                />
+                <span className="text-white font-medium text-lg">Asillios</span>
               </a>
-            );
-          })}
-        </div>
-      </nav>
+            </div>
 
-      {/* External Links */}
-      <div className="p-4 border-t border-neutral-800">
-        <div className="space-y-1">
-          {externalLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-400 hover:text-white hover:bg-neutral-800/50 rounded-lg transition-colors"
-            >
-              {link.icon}
-              {link.label}
-            </a>
-          ))}
-        </div>
-      </div>
+            {/* Navigation */}
+            <nav className="flex-1 p-4">
+              <div className="space-y-1">
+                {navItems.map((item) => {
+                  const isActive = activeSection === item.href.slice(1);
+                  return (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      className="relative block"
+                    >
+                      <motion.div
+                        className={`px-4 py-2.5 rounded-lg text-sm transition-colors ${
+                          isActive
+                            ? 'text-white bg-teal-900/50'
+                            : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                        }`}
+                        whileHover={{ x: 4 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeIndicator"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-teal-500 rounded-full"
+                          />
+                        )}
+                        {item.label}
+                      </motion.div>
+                    </a>
+                  );
+                })}
+              </div>
+            </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-neutral-800">
-        <p className="text-xs text-neutral-600 text-center">
-          Open Source
-        </p>
-      </div>
-    </motion.aside>
+            {/* External Links */}
+            <div className="p-4 border-t border-neutral-800">
+              <div className="space-y-1">
+                {externalLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-neutral-400 hover:text-white hover:bg-neutral-800/50 rounded-lg transition-colors"
+                  >
+                    {link.icon}
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-neutral-800">
+              <p className="text-xs text-neutral-600 text-center">
+                Open Source
+              </p>
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
