@@ -31,8 +31,12 @@ const externalLinks = [
   },
 ];
 
-export default function Sidebar() {
-  const [isOpen, setIsOpen] = React.useState(false);
+interface SidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [activeSection, setActiveSection] = React.useState('');
 
   React.useEffect(() => {
@@ -67,11 +71,11 @@ export default function Sidebar() {
     <>
       {/* Toggle Button - Always visible */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         className="fixed left-4 top-4 z-50 hidden lg:flex items-center justify-center w-10 h-10 bg-neutral-900 border border-neutral-800 rounded-lg hover:bg-neutral-800 hover:border-neutral-700 transition-colors"
         aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
       >
-        <motion.svg
+        <svg
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -81,8 +85,6 @@ export default function Sidebar() {
           strokeLinecap="round"
           strokeLinejoin="round"
           className="text-neutral-400"
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3 }}
         >
           {isOpen ? (
             <>
@@ -96,22 +98,8 @@ export default function Sidebar() {
               <line x1="3" y1="18" x2="21" y2="18" />
             </>
           )}
-        </motion.svg>
+        </svg>
       </button>
-
-      {/* Backdrop */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 z-40 hidden lg:block"
-            onClick={() => setIsOpen(false)}
-          />
-        )}
-      </AnimatePresence>
 
       {/* Sidebar */}
       <AnimatePresence>
@@ -121,7 +109,7 @@ export default function Sidebar() {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed left-0 top-0 h-screen w-56 bg-black border-r border-neutral-800 z-50 hidden lg:flex flex-col"
+            className="fixed left-0 top-0 h-screen w-56 bg-black border-r border-neutral-800 z-40 hidden lg:flex flex-col"
           >
             {/* Logo */}
             <div className="p-6 border-b border-neutral-800">
