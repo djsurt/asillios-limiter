@@ -67,7 +67,7 @@ export default function Sidebar() {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="fixed left-0 top-0 h-screen w-56 bg-neutral-950 border-r border-neutral-800 z-50 hidden lg:flex flex-col"
+      className="fixed left-0 top-0 h-screen w-56 bg-black border-r border-neutral-800 z-50 hidden lg:flex flex-col"
     >
       {/* Logo */}
       <div className="p-6 border-b border-neutral-800">
