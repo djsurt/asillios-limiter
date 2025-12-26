@@ -218,6 +218,10 @@ manually add tokens (for streaming, etc).
 
 reset user's usage.
 
+## contributing
+
+see [CONTRIBUTING.md](https://github.com/audgeviolin07/asillios-limiter/blob/main/CONTRIBUTING.md) for guidelines on how to contribute.
+
 ## license
 
 mit
