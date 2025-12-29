@@ -1,6 +1,9 @@
 # dependencies
 node_modules/
 
+# claude code
+.claude/
+
 # build outputs
 dist/
 .next/
