@@ -1,44 +1,99 @@
-// types for llm responses we support
+/**
+ * Token usage information from Anthropic's Claude API responses.
+ * @see https://docs.anthropic.com/claude/reference/messages_post
+ */
 export interface AnthropicUsage {
+  /** Number of tokens in the input/prompt */
   input_tokens: number;
+  /** Number of tokens in the model's response */
   output_tokens: number;
 }
 
+/**
+ * Token usage information from OpenAI's API responses.
+ * @see https://platform.openai.com/docs/api-reference/chat/object
+ */
 export interface OpenAIUsage {
+  /** Number of tokens in the prompt */
   prompt_tokens: number;
+  /** Number of tokens in the completion/response */
   completion_tokens: number;
 }
 
+/**
+ * Union type representing token usage from supported LLM providers.
+ * Automatically extracts usage information from API responses.
+ */
 export type LLMUsage = AnthropicUsage | OpenAIUsage;
 
+/**
+ * Statistics about a user's token and cost usage within the rate limit window.
+ * Returned by the `stats()` method.
+ */
 export interface UserStats {
+  /** Total tokens consumed by the user in the current window */
   tokensUsed: number;
+  /** Tokens remaining before hitting the limit */
   remaining: number;
+  /** When the usage window resets (for sliding windows, this is when the oldest usage expires) */
   resetAt: Date;
+  /** Percentage of the token limit used (0-100) */
   percentUsed: number;
+  /** Total estimated cost in USD (only present if `trackCost` is enabled) */
   costUsed?: number;
+  /** Remaining cost budget in USD (only present if `costLimit` is set) */
   costRemaining?: number;
 }
 
+/**
+ * A single usage record tracking tokens, cost, and timestamp.
+ * Used internally to implement sliding window rate limiting.
+ */
 export interface UsageEntry {
+  /** Number of tokens consumed in this usage */
   tokens: number;
+  /** Estimated cost in USD for this usage */
   cost: number;
+  /** Unix timestamp (milliseconds) when this usage occurred */
   timestamp: number;
 }
 
+/**
+ * Internal data structure for storing a user's usage history.
+ */
 export interface UserData {
+  /** Array of usage entries within the tracking window */
   entries: UsageEntry[];
+  /** Set of threshold percentages that have already triggered callbacks */
   thresholdsTriggered: Set<number>;
 }
 
-// storage adapter interface for custom backends
+/**
+ * Storage adapter interface for implementing custom backends.
+ * Implement this interface to use Redis, databases, or other storage solutions.
+ *
+ * @example
+ * ```typescript
+ * class CustomStorage implements StorageAdapter {
+ *   async get(userId: string) { ... }
+ *   async set(userId: string, data: UserData) { ... }
+ *   async delete(userId: string) { ... }
+ * }
+ * ```
+ */
 export interface StorageAdapter {
+  /** Retrieve user data by user ID */
   get(userId: string): Promise<UserData | null>;
+  /** Store or update user data */
   set(userId: string, data: UserData): Promise<void>;
+  /** Delete user data (used for resets) */
   delete(userId: string): Promise<void>;
 }
 
-// simple in-memory storage
+/**
+ * Simple in-memory storage adapter (default).
+ * Data is lost when the process restarts. For production use, consider Redis or database storage.
+ */
 export class MemoryStorage implements StorageAdapter {
   private store = new Map<string, UserData>();
 
@@ -55,15 +110,37 @@ export class MemoryStorage implements StorageAdapter {
   }
 }
 
-// redis adapter - bring your own redis client
+/**
+ * Minimal Redis client interface required by RedisStorage.
+ * Compatible with ioredis, node-redis, and similar clients.
+ */
 export interface RedisClient {
   get(key: string): Promise<string | null>;
   set(key: string, value: string): Promise<unknown>;
   del(key: string): Promise<unknown>;
 }
 
+/**
+ * Redis storage adapter for distributed rate limiting.
+ * Bring your own Redis client (ioredis, node-redis, etc).
+ *
+ * @example
+ * ```typescript
+ * import Redis from "ioredis";
+ * const redis = new Redis();
+ * const storage = new RedisStorage(redis, "myapp:");
+ * ```
+ */
 export class RedisStorage implements StorageAdapter {
-  constructor(private redis: RedisClient, private prefix = "limiter:") {}
+  /**
+   * Creates a Redis storage adapter.
+   * @param redis - Redis client instance
+   * @param prefix - Key prefix for namespacing (default: "limiter:")
+   */
+  constructor(
+    private redis: RedisClient,
+    private prefix = "limiter:",
+  ) {}
 
   async get(userId: string): Promise<UserData | null> {
     const data = await this.redis.get(this.prefix + userId);
@@ -90,40 +167,76 @@ export class RedisStorage implements StorageAdapter {
   }
 }
 
-// model pricing per 1k tokens (input, output)
-export const MODEL_PRICING: Record<string, { input: number; output: number }> = {
-  // anthropic
-  "claude-3-opus": { input: 0.015, output: 0.075 },
-  "claude-3-sonnet": { input: 0.003, output: 0.015 },
-  "claude-3-haiku": { input: 0.00025, output: 0.00125 },
-  "claude-sonnet-4": { input: 0.003, output: 0.015 },
-  // openai
-  "gpt-4": { input: 0.03, output: 0.06 },
-  "gpt-4-turbo": { input: 0.01, output: 0.03 },
-  "gpt-4o": { input: 0.005, output: 0.015 },
-  "gpt-4o-mini": { input: 0.00015, output: 0.0006 },
-  "gpt-3.5-turbo": { input: 0.0005, output: 0.0015 },
-};
+/**
+ * Model pricing per 1,000 tokens (input and output).
+ * Prices are in USD and based on official provider pricing as of the library's release.
+ */
+export const MODEL_PRICING: Record<string, { input: number; output: number }> =
+  {
+    // anthropic
+    "claude-3-opus": { input: 0.015, output: 0.075 },
+    "claude-3-sonnet": { input: 0.003, output: 0.015 },
+    "claude-3-haiku": { input: 0.00025, output: 0.00125 },
+    "claude-sonnet-4": { input: 0.003, output: 0.015 },
+    // openai
+    "gpt-4": { input: 0.03, output: 0.06 },
+    "gpt-4-turbo": { input: 0.01, output: 0.03 },
+    "gpt-4o": { input: 0.005, output: 0.015 },
+    "gpt-4o-mini": { input: 0.00015, output: 0.0006 },
+    "gpt-3.5-turbo": { input: 0.0005, output: 0.0015 },
+  };
 
+/**
+ * Configuration for a single rate limit.
+ */
 export interface LimitConfig {
+  /** Maximum tokens allowed in this window */
   tokens: number;
-  window: number; // in ms
+  /** Time window in milliseconds */
+  window: number;
 }
 
+/**
+ * Configuration options for creating a rate limiter.
+ *
+ * @example
+ * ```typescript
+ * // Simple: single limit
+ * const limiter = createLimiter({
+ *   limit: 100000,
+ *   window: 60 * 60 * 1000, // 1 hour
+ * });
+ *
+ * // Advanced: multiple limits with cost tracking
+ * const limiter = createLimiter({
+ *   limits: [
+ *     { tokens: 10000, window: 60 * 1000 },       // 10k per minute
+ *     { tokens: 100000, window: 60 * 60 * 1000 }, // 100k per hour
+ *   ],
+ *   trackCost: true,
+ *   costLimit: 5.0,
+ *   burstPercent: 20,
+ * });
+ * ```
+ */
 export interface LimiterConfig {
-  // simple config: single limit
+  /** Maximum tokens allowed (simple config) */
   limit?: number;
+  /** Time window in milliseconds (simple config) */
   window?: number;
-  // advanced config: multiple limits (e.g., per-minute AND per-day)
+  /** Multiple limits for different time windows (advanced config) */
   limits?: LimitConfig[];
-  // burst allowance - let users go over by this percentage temporarily
+  /** Allow users to temporarily exceed limits by this percentage (e.g., 20 for 20%) */
   burstPercent?: number;
-  // cost tracking
+  /** Enable cost tracking based on model pricing */
   trackCost?: boolean;
+  /** Maximum cost in USD (requires trackCost or will auto-enable it) */
   costLimit?: number;
-  // storage and callbacks
+  /** Custom storage backend (default: MemoryStorage) */
   storage?: StorageAdapter;
+  /** Callback fired when user crosses usage thresholds */
   onThreshold?: (userId: string, percent: number) => void;
+  /** Percentage thresholds that trigger callbacks (default: [80, 90, 100]) */
   thresholds?: number[];
 }
 
