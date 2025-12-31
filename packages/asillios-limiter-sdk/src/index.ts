@@ -1,44 +1,99 @@
-// types for llm responses we support
+/**
+ * Token usage information from Anthropic's Claude API responses.
+ * @see https://docs.anthropic.com/claude/reference/messages_post
+ */
 export interface AnthropicUsage {
+  /** Number of tokens in the input/prompt */
   input_tokens: number;
+  /** Number of tokens in the model's response */
   output_tokens: number;
 }
 
+/**
+ * Token usage information from OpenAI's API responses.
+ * @see https://platform.openai.com/docs/api-reference/chat/object
+ */
 export interface OpenAIUsage {
+  /** Number of tokens in the prompt */
   prompt_tokens: number;
+  /** Number of tokens in the completion/response */
   completion_tokens: number;
 }
 
+/**
+ * Union type representing token usage from supported LLM providers.
+ * Automatically extracts usage information from API responses.
+ */
 export type LLMUsage = AnthropicUsage | OpenAIUsage;
 
+/**
+ * Statistics about a user's token and cost usage within the rate limit window.
+ * Returned by the `stats()` method.
+ */
 export interface UserStats {
+  /** Total tokens consumed by the user in the current window */
   tokensUsed: number;
+  /** Tokens remaining before hitting the limit */
   remaining: number;
+  /** When the usage window resets (for sliding windows, this is when the oldest usage expires) */
   resetAt: Date;
+  /** Percentage of the token limit used (0-100) */
   percentUsed: number;
+  /** Total estimated cost in USD (only present if `trackCost` is enabled) */
   costUsed?: number;
+  /** Remaining cost budget in USD (only present if `costLimit` is set) */
   costRemaining?: number;
 }
 
+/**
+ * A single usage record tracking tokens, cost, and timestamp.
+ * Used internally to implement sliding window rate limiting.
+ */
 export interface UsageEntry {
+  /** Number of tokens consumed in this usage */
   tokens: number;
+  /** Estimated cost in USD for this usage */
   cost: number;
+  /** Unix timestamp (milliseconds) when this usage occurred */
   timestamp: number;
 }
 
+/**
+ * Internal data structure for storing a user's usage history.
+ */
 export interface UserData {
+  /** Array of usage entries within the tracking window */
   entries: UsageEntry[];
+  /** Set of threshold percentages that have already triggered callbacks */
   thresholdsTriggered: Set<number>;
 }
 
-// storage adapter interface for custom backends
+/**
+ * Storage adapter interface for implementing custom backends.
+ * Implement this interface to use Redis, databases, or other storage solutions.
+ *
+ * @example
+ * ```typescript
+ * class CustomStorage implements StorageAdapter {
+ *   async get(userId: string) { ... }
+ *   async set(userId: string, data: UserData) { ... }
+ *   async delete(userId: string) { ... }
+ * }
+ * ```
+ */
 export interface StorageAdapter {
+  /** Retrieve user data by user ID */
   get(userId: string): Promise<UserData | null>;
+  /** Store or update user data */
   set(userId: string, data: UserData): Promise<void>;
+  /** Delete user data (used for resets) */
   delete(userId: string): Promise<void>;
 }
 
-// simple in-memory storage
+/**
+ * Simple in-memory storage adapter (default).
+ * Data is lost when the process restarts. For production use, consider Redis or database storage.
+ */
 export class MemoryStorage implements StorageAdapter {
   private store = new Map<string, UserData>();
 
@@ -55,15 +110,37 @@ export class MemoryStorage implements StorageAdapter {
   }
 }
 
-// redis adapter - bring your own redis client
+/**
+ * Minimal Redis client interface required by RedisStorage.
+ * Compatible with ioredis, node-redis, and similar clients.
+ */
 export interface RedisClient {
   get(key: string): Promise<string | null>;
   set(key: string, value: string): Promise<unknown>;
   del(key: string): Promise<unknown>;
 }
 
+/**
+ * Redis storage adapter for distributed rate limiting.
+ * Bring your own Redis client (ioredis, node-redis, etc).
+ *
+ * @example
+ * ```typescript
+ * import Redis from "ioredis";
+ * const redis = new Redis();
+ * const storage = new RedisStorage(redis, "myapp:");
+ * ```
+ */
 export class RedisStorage implements StorageAdapter {
-  constructor(private redis: RedisClient, private prefix = "limiter:") {}
+  /**
+   * Creates a Redis storage adapter.
+   * @param redis - Redis client instance
+   * @param prefix - Key prefix for namespacing (default: "limiter:")
+   */
+  constructor(
+    private redis: RedisClient,
+    private prefix = "limiter:",
+  ) {}
 
   async get(userId: string): Promise<UserData | null> {
     const data = await this.redis.get(this.prefix + userId);
@@ -90,44 +167,84 @@ export class RedisStorage implements StorageAdapter {
   }
 }
 
-// model pricing per 1k tokens (input, output)
-export const MODEL_PRICING: Record<string, { input: number; output: number }> = {
-  // anthropic
-  "claude-3-opus": { input: 0.015, output: 0.075 },
-  "claude-3-sonnet": { input: 0.003, output: 0.015 },
-  "claude-3-haiku": { input: 0.00025, output: 0.00125 },
-  "claude-sonnet-4": { input: 0.003, output: 0.015 },
-  // openai
-  "gpt-4": { input: 0.03, output: 0.06 },
-  "gpt-4-turbo": { input: 0.01, output: 0.03 },
-  "gpt-4o": { input: 0.005, output: 0.015 },
-  "gpt-4o-mini": { input: 0.00015, output: 0.0006 },
-  "gpt-3.5-turbo": { input: 0.0005, output: 0.0015 },
-};
+/**
+ * Model pricing per 1,000 tokens (input and output).
+ * Prices are in USD and based on official provider pricing as of the library's release.
+ */
+export const MODEL_PRICING: Record<string, { input: number; output: number }> =
+  {
+    // anthropic
+    "claude-3-opus": { input: 0.015, output: 0.075 },
+    "claude-3-sonnet": { input: 0.003, output: 0.015 },
+    "claude-3-haiku": { input: 0.00025, output: 0.00125 },
+    "claude-sonnet-4": { input: 0.003, output: 0.015 },
+    // openai
+    "gpt-4": { input: 0.03, output: 0.06 },
+    "gpt-4-turbo": { input: 0.01, output: 0.03 },
+    "gpt-4o": { input: 0.005, output: 0.015 },
+    "gpt-4o-mini": { input: 0.00015, output: 0.0006 },
+    "gpt-3.5-turbo": { input: 0.0005, output: 0.0015 },
+  };
 
+/**
+ * Configuration for a single rate limit.
+ */
 export interface LimitConfig {
+  /** Maximum tokens allowed in this window */
   tokens: number;
-  window: number; // in ms
+  /** Time window in milliseconds */
+  window: number;
 }
 
+/**
+ * Configuration options for creating a rate limiter.
+ *
+ * @example
+ * ```typescript
+ * // Simple: single limit
+ * const limiter = createLimiter({
+ *   limit: 100000,
+ *   window: 60 * 60 * 1000, // 1 hour
+ * });
+ *
+ * // Advanced: multiple limits with cost tracking
+ * const limiter = createLimiter({
+ *   limits: [
+ *     { tokens: 10000, window: 60 * 1000 },       // 10k per minute
+ *     { tokens: 100000, window: 60 * 60 * 1000 }, // 100k per hour
+ *   ],
+ *   trackCost: true,
+ *   costLimit: 5.0,
+ *   burstPercent: 20,
+ * });
+ * ```
+ */
 export interface LimiterConfig {
-  // simple config: single limit
+  /** Maximum tokens allowed (simple config) */
   limit?: number;
+  /** Time window in milliseconds (simple config) */
   window?: number;
-  // advanced config: multiple limits (e.g., per-minute AND per-day)
+  /** Multiple limits for different time windows (advanced config) */
   limits?: LimitConfig[];
-  // burst allowance - let users go over by this percentage temporarily
+  /** Allow users to temporarily exceed limits by this percentage (e.g., 20 for 20%) */
   burstPercent?: number;
-  // cost tracking
+  /** Enable cost tracking based on model pricing */
   trackCost?: boolean;
+  /** Maximum cost in USD (requires trackCost or will auto-enable it) */
   costLimit?: number;
-  // storage and callbacks
+  /** Custom storage backend (default: MemoryStorage) */
   storage?: StorageAdapter;
+  /** Callback fired when user crosses usage thresholds */
   onThreshold?: (userId: string, percent: number) => void;
+  /** Percentage thresholds that trigger callbacks (default: [80, 90, 100]) */
   thresholds?: number[];
 }
 
-// extracts token count from either anthropic or openai response format
+/**
+ * Extracts token counts from LLM API responses.
+ * Supports both Anthropic and OpenAI response formats.
+ * @internal
+ */
 function extractTokens(response: unknown): { input: number; output: number } {
   if (!response || typeof response !== "object") return { input: 0, output: 0 };
 
@@ -150,12 +267,11 @@ function extractTokens(response: unknown): { input: number; output: number } {
   return { input: 0, output: 0 };
 }
 
-// calculate cost based on model pricing
-function calculateCost(
-  input: number,
-  output: number,
-  model?: string
-): number {
+/**
+ * Calculates estimated cost based on model pricing.
+ * @internal
+ */
+function calculateCost(input: number, output: number, model?: string): number {
   if (!model) return 0;
   // find matching model (partial match for versioned model names)
   const key = Object.keys(MODEL_PRICING).find((k) => model.includes(k));
@@ -164,6 +280,39 @@ function calculateCost(
   return (input / 1000) * pricing.input + (output / 1000) * pricing.output;
 }
 
+/**
+ * Creates a token-based rate limiter for LLM API calls.
+ *
+ * Implements sliding window rate limiting with support for:
+ * - Multiple simultaneous limits (per-minute, per-hour, per-day)
+ * - Automatic token extraction from OpenAI and Anthropic responses
+ * - Cost tracking and limits
+ * - Burst allowances
+ * - Threshold callbacks
+ * - Custom storage backends (Redis, databases, etc.)
+ *
+ * @param config - Configuration options
+ * @returns Rate limiter instance with methods to wrap calls, check limits, and get stats
+ *
+ * @example
+ * ```typescript
+ * const limiter = createLimiter({
+ *   limit: 100000,
+ *   window: 60 * 60 * 1000,
+ *   onThreshold: (userId, percent) => {
+ *     console.log(`User ${userId} at ${percent}% usage`);
+ *   },
+ * });
+ *
+ * // Wrap LLM calls
+ * const response = await limiter.wrap("user-123", () =>
+ *   openai.chat.completions.create({
+ *     model: "gpt-4",
+ *     messages: [{ role: "user", content: "Hello!" }],
+ *   })
+ * );
+ * ```
+ */
 export function createLimiter(config: LimiterConfig) {
   const storage = config.storage ?? new MemoryStorage();
   const thresholds = config.thresholds ?? [80, 90, 100];
@@ -184,7 +333,10 @@ export function createLimiter(config: LimiterConfig) {
   }
 
   // clean old entries outside all windows and calculate usage for a specific window
-  function getWindowUsage(entries: UsageEntry[], windowMs: number): { tokens: number; cost: number } {
+  function getWindowUsage(
+    entries: UsageEntry[],
+    windowMs: number,
+  ): { tokens: number; cost: number } {
     const cutoff = Date.now() - windowMs;
     let tokens = 0;
     let cost = 0;
@@ -204,7 +356,11 @@ export function createLimiter(config: LimiterConfig) {
     return entries.filter((e) => e.timestamp >= cutoff);
   }
 
-  // check if user is within all limits (with optional burst allowance)
+  /**
+   * Checks if a user is within all configured rate limits.
+   * @param userId - Unique identifier for the user
+   * @returns true if user is within all limits, false otherwise
+   */
   async function check(userId: string): Promise<boolean> {
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
@@ -225,7 +381,11 @@ export function createLimiter(config: LimiterConfig) {
     return true;
   }
 
-  // get remaining tokens for the primary (first) limit
+  /**
+   * Gets remaining tokens for the primary (first) configured limit.
+   * @param userId - Unique identifier for the user
+   * @returns Number of tokens remaining before hitting the limit
+   */
   async function getRemainingTokens(userId: string): Promise<number> {
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
@@ -234,7 +394,11 @@ export function createLimiter(config: LimiterConfig) {
     return Math.max(0, primaryLimit.tokens - usage.tokens);
   }
 
-  // get detailed usage stats
+  /**
+   * Gets detailed usage statistics for a user.
+   * @param userId - Unique identifier for the user
+   * @returns Statistics including tokens used, remaining, cost (if enabled), and reset time
+   */
   async function stats(userId: string): Promise<UserStats> {
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
@@ -263,7 +427,11 @@ export function createLimiter(config: LimiterConfig) {
   }
 
   // record usage and check thresholds
-  async function recordUsage(userId: string, tokens: number, cost: number): Promise<void> {
+  async function recordUsage(
+    userId: string,
+    tokens: number,
+    cost: number,
+  ): Promise<void> {
     const data = await getUserData(userId);
     data.entries = pruneEntries(data.entries);
     data.entries.push({ tokens, cost, timestamp: Date.now() });
@@ -285,7 +453,33 @@ export function createLimiter(config: LimiterConfig) {
     await storage.set(userId, data);
   }
 
-  // wrap an async llm call with rate limiting
+  /**
+   * Wraps an async LLM API call with automatic rate limiting and token tracking.
+   * Tokens are automatically extracted from the response and tracked.
+   *
+   * @param userId - Unique identifier for the user
+   * @param fn - Async function that returns an LLM API response
+   * @param options - Optional configuration
+   * @param options.throwOnLimit - Throw error if user exceeds limits (default: false)
+   * @param options.model - Model name for cost calculation (e.g., "gpt-4", "claude-3-sonnet")
+   * @returns The original response from the wrapped function
+   * @throws {Error} If throwOnLimit is true and user exceeds limits
+   *
+   * @example
+   * ```typescript
+   * // Basic usage
+   * const response = await limiter.wrap("user-123", () =>
+   *   openai.chat.completions.create({ ... })
+   * );
+   *
+   * // With cost tracking
+   * const response = await limiter.wrap(
+   *   "user-123",
+   *   () => anthropic.messages.create({ ... }),
+   *   { model: "claude-3-sonnet", throwOnLimit: true }
+   * );
+   * ```
+   */
   async function wrap<T>(
     userId: string,
     fn: () => Promise<T>,
@@ -311,12 +505,36 @@ export function createLimiter(config: LimiterConfig) {
     return response;
   }
 
-  // manually add tokens
-  async function addTokens(userId: string, tokens: number, cost = 0): Promise<void> {
+  /**
+   * Manually adds tokens to a user's usage.
+   * Useful for tracking tokens from streaming responses or external sources.
+   *
+   * @param userId - Unique identifier for the user
+   * @param tokens - Number of tokens to add
+   * @param cost - Optional cost in USD (for custom cost tracking)
+   *
+   * @example
+   * ```typescript
+   * // Track streaming tokens
+   * let tokenCount = 0;
+   * for await (const chunk of stream) {
+   *   tokenCount += estimateTokens(chunk);
+   * }
+   * await limiter.addTokens("user-123", tokenCount);
+   * ```
+   */
+  async function addTokens(
+    userId: string,
+    tokens: number,
+    cost = 0,
+  ): Promise<void> {
     await recordUsage(userId, tokens, cost);
   }
 
-  // reset a user's usage
+  /**
+   * Resets a user's usage data, clearing all tracked tokens and costs.
+   * @param userId - Unique identifier for the user
+   */
   async function reset(userId: string): Promise<void> {
     await storage.delete(userId);
   }
@@ -324,7 +542,23 @@ export function createLimiter(config: LimiterConfig) {
   return { wrap, check, stats, getRemainingTokens, addTokens, reset };
 }
 
-// express middleware helper
+/**
+ * Express middleware for rate limiting API routes.
+ * Returns 429 status with usage details when limits are exceeded.
+ *
+ * @param limiter - Rate limiter instance from createLimiter()
+ * @param getUserId - Function to extract user ID from request (return null to skip limiting)
+ * @returns Express middleware function
+ *
+ * @example
+ * ```typescript
+ * const limiter = createLimiter({ limit: 50000, window: 3600000 });
+ *
+ * app.use("/api/chat",
+ *   expressMiddleware(limiter, (req) => req.user?.id ?? null)
+ * );
+ * ```
+ */
 export function expressMiddleware(
   limiter: ReturnType<typeof createLimiter>,
   getUserId: (req: unknown) => string | null
@@ -347,7 +581,29 @@ export function expressMiddleware(
   };
 }
 
-// next.js middleware helper (for use in api routes)
+/**
+ * Next.js API route middleware helper for rate limiting.
+ * Returns a response object when limits are exceeded.
+ *
+ * @param limiter - Rate limiter instance from createLimiter()
+ * @param getUserId - Function to extract user ID from request (return null to skip limiting)
+ * @returns Async function that returns {allowed, response?}
+ *
+ * @example
+ * ```typescript
+ * const limiter = createLimiter({ limit: 50000, window: 3600000 });
+ * const checkLimit = nextMiddleware(limiter,
+ *   (req) => req.headers.get("x-user-id")
+ * );
+ *
+ * export async function POST(req: Request) {
+ *   const { allowed, response } = await checkLimit(req);
+ *   if (!allowed) return response;
+ *
+ *   // Proceed with LLM call...
+ * }
+ * ```
+ */
 export function nextMiddleware(
   limiter: ReturnType<typeof createLimiter>,
   getUserId: (req: unknown) => string | null
