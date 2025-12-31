@@ -240,7 +240,11 @@ export interface LimiterConfig {
   thresholds?: number[];
 }
 
-// extracts token count from either anthropic or openai response format
+/**
+ * Extracts token counts from LLM API responses.
+ * Supports both Anthropic and OpenAI response formats.
+ * @internal
+ */
 function extractTokens(response: unknown): { input: number; output: number } {
   if (!response || typeof response !== "object") return { input: 0, output: 0 };
 
@@ -263,12 +267,11 @@ function extractTokens(response: unknown): { input: number; output: number } {
   return { input: 0, output: 0 };
 }
 
-// calculate cost based on model pricing
-function calculateCost(
-  input: number,
-  output: number,
-  model?: string
-): number {
+/**
+ * Calculates estimated cost based on model pricing.
+ * @internal
+ */
+function calculateCost(input: number, output: number, model?: string): number {
   if (!model) return 0;
   // find matching model (partial match for versioned model names)
   const key = Object.keys(MODEL_PRICING).find((k) => model.includes(k));
