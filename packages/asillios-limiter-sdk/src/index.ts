@@ -280,6 +280,39 @@ function calculateCost(input: number, output: number, model?: string): number {
   return (input / 1000) * pricing.input + (output / 1000) * pricing.output;
 }
 
+/**
+ * Creates a token-based rate limiter for LLM API calls.
+ *
+ * Implements sliding window rate limiting with support for:
+ * - Multiple simultaneous limits (per-minute, per-hour, per-day)
+ * - Automatic token extraction from OpenAI and Anthropic responses
+ * - Cost tracking and limits
+ * - Burst allowances
+ * - Threshold callbacks
+ * - Custom storage backends (Redis, databases, etc.)
+ *
+ * @param config - Configuration options
+ * @returns Rate limiter instance with methods to wrap calls, check limits, and get stats
+ *
+ * @example
+ * ```typescript
+ * const limiter = createLimiter({
+ *   limit: 100000,
+ *   window: 60 * 60 * 1000,
+ *   onThreshold: (userId, percent) => {
+ *     console.log(`User ${userId} at ${percent}% usage`);
+ *   },
+ * });
+ *
+ * // Wrap LLM calls
+ * const response = await limiter.wrap("user-123", () =>
+ *   openai.chat.completions.create({
+ *     model: "gpt-4",
+ *     messages: [{ role: "user", content: "Hello!" }],
+ *   })
+ * );
+ * ```
+ */
 export function createLimiter(config: LimiterConfig) {
   const storage = config.storage ?? new MemoryStorage();
   const thresholds = config.thresholds ?? [80, 90, 100];
@@ -300,7 +333,10 @@ export function createLimiter(config: LimiterConfig) {
   }
 
   // clean old entries outside all windows and calculate usage for a specific window
-  function getWindowUsage(entries: UsageEntry[], windowMs: number): { tokens: number; cost: number } {
+  function getWindowUsage(
+    entries: UsageEntry[],
+    windowMs: number,
+  ): { tokens: number; cost: number } {
     const cutoff = Date.now() - windowMs;
     let tokens = 0;
     let cost = 0;
@@ -320,7 +356,11 @@ export function createLimiter(config: LimiterConfig) {
     return entries.filter((e) => e.timestamp >= cutoff);
   }
 
-  // check if user is within all limits (with optional burst allowance)
+  /**
+   * Checks if a user is within all configured rate limits.
+   * @param userId - Unique identifier for the user
+   * @returns true if user is within all limits, false otherwise
+   */
   async function check(userId: string): Promise<boolean> {
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
@@ -341,7 +381,11 @@ export function createLimiter(config: LimiterConfig) {
     return true;
   }
 
-  // get remaining tokens for the primary (first) limit
+  /**
+   * Gets remaining tokens for the primary (first) configured limit.
+   * @param userId - Unique identifier for the user
+   * @returns Number of tokens remaining before hitting the limit
+   */
   async function getRemainingTokens(userId: string): Promise<number> {
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
@@ -350,7 +394,11 @@ export function createLimiter(config: LimiterConfig) {
     return Math.max(0, primaryLimit.tokens - usage.tokens);
   }
 
-  // get detailed usage stats
+  /**
+   * Gets detailed usage statistics for a user.
+   * @param userId - Unique identifier for the user
+   * @returns Statistics including tokens used, remaining, cost (if enabled), and reset time
+   */
   async function stats(userId: string): Promise<UserStats> {
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
@@ -379,7 +427,11 @@ export function createLimiter(config: LimiterConfig) {
   }
 
   // record usage and check thresholds
-  async function recordUsage(userId: string, tokens: number, cost: number): Promise<void> {
+  async function recordUsage(
+    userId: string,
+    tokens: number,
+    cost: number,
+  ): Promise<void> {
     const data = await getUserData(userId);
     data.entries = pruneEntries(data.entries);
     data.entries.push({ tokens, cost, timestamp: Date.now() });
@@ -401,7 +453,33 @@ export function createLimiter(config: LimiterConfig) {
     await storage.set(userId, data);
   }
 
-  // wrap an async llm call with rate limiting
+  /**
+   * Wraps an async LLM API call with automatic rate limiting and token tracking.
+   * Tokens are automatically extracted from the response and tracked.
+   *
+   * @param userId - Unique identifier for the user
+   * @param fn - Async function that returns an LLM API response
+   * @param options - Optional configuration
+   * @param options.throwOnLimit - Throw error if user exceeds limits (default: false)
+   * @param options.model - Model name for cost calculation (e.g., "gpt-4", "claude-3-sonnet")
+   * @returns The original response from the wrapped function
+   * @throws {Error} If throwOnLimit is true and user exceeds limits
+   *
+   * @example
+   * ```typescript
+   * // Basic usage
+   * const response = await limiter.wrap("user-123", () =>
+   *   openai.chat.completions.create({ ... })
+   * );
+   *
+   * // With cost tracking
+   * const response = await limiter.wrap(
+   *   "user-123",
+   *   () => anthropic.messages.create({ ... }),
+   *   { model: "claude-3-sonnet", throwOnLimit: true }
+   * );
+   * ```
+   */
   async function wrap<T>(
     userId: string,
     fn: () => Promise<T>,
@@ -427,12 +505,36 @@ export function createLimiter(config: LimiterConfig) {
     return response;
   }
 
-  // manually add tokens
-  async function addTokens(userId: string, tokens: number, cost = 0): Promise<void> {
+  /**
+   * Manually adds tokens to a user's usage.
+   * Useful for tracking tokens from streaming responses or external sources.
+   *
+   * @param userId - Unique identifier for the user
+   * @param tokens - Number of tokens to add
+   * @param cost - Optional cost in USD (for custom cost tracking)
+   *
+   * @example
+   * ```typescript
+   * // Track streaming tokens
+   * let tokenCount = 0;
+   * for await (const chunk of stream) {
+   *   tokenCount += estimateTokens(chunk);
+   * }
+   * await limiter.addTokens("user-123", tokenCount);
+   * ```
+   */
+  async function addTokens(
+    userId: string,
+    tokens: number,
+    cost = 0,
+  ): Promise<void> {
     await recordUsage(userId, tokens, cost);
   }
 
-  // reset a user's usage
+  /**
+   * Resets a user's usage data, clearing all tracked tokens and costs.
+   * @param userId - Unique identifier for the user
+   */
   async function reset(userId: string): Promise<void> {
     await storage.delete(userId);
   }
