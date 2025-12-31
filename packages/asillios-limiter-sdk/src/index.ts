@@ -542,7 +542,23 @@ export function createLimiter(config: LimiterConfig) {
   return { wrap, check, stats, getRemainingTokens, addTokens, reset };
 }
 
-// express middleware helper
+/**
+ * Express middleware for rate limiting API routes.
+ * Returns 429 status with usage details when limits are exceeded.
+ *
+ * @param limiter - Rate limiter instance from createLimiter()
+ * @param getUserId - Function to extract user ID from request (return null to skip limiting)
+ * @returns Express middleware function
+ *
+ * @example
+ * ```typescript
+ * const limiter = createLimiter({ limit: 50000, window: 3600000 });
+ *
+ * app.use("/api/chat",
+ *   expressMiddleware(limiter, (req) => req.user?.id ?? null)
+ * );
+ * ```
+ */
 export function expressMiddleware(
   limiter: ReturnType<typeof createLimiter>,
   getUserId: (req: unknown) => string | null
@@ -565,7 +581,29 @@ export function expressMiddleware(
   };
 }
 
-// next.js middleware helper (for use in api routes)
+/**
+ * Next.js API route middleware helper for rate limiting.
+ * Returns a response object when limits are exceeded.
+ *
+ * @param limiter - Rate limiter instance from createLimiter()
+ * @param getUserId - Function to extract user ID from request (return null to skip limiting)
+ * @returns Async function that returns {allowed, response?}
+ *
+ * @example
+ * ```typescript
+ * const limiter = createLimiter({ limit: 50000, window: 3600000 });
+ * const checkLimit = nextMiddleware(limiter,
+ *   (req) => req.headers.get("x-user-id")
+ * );
+ *
+ * export async function POST(req: Request) {
+ *   const { allowed, response } = await checkLimit(req);
+ *   if (!allowed) return response;
+ *
+ *   // Proceed with LLM call...
+ * }
+ * ```
+ */
 export function nextMiddleware(
   limiter: ReturnType<typeof createLimiter>,
   getUserId: (req: unknown) => string | null
