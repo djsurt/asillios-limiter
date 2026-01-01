@@ -177,7 +177,13 @@ export const MODEL_PRICING: Record<string, { input: number; output: number }> =
     "claude-3-opus": { input: 0.015, output: 0.075 },
     "claude-3-sonnet": { input: 0.003, output: 0.015 },
     "claude-3-haiku": { input: 0.00025, output: 0.00125 },
+    "claude-3-5-haiku": {input: 0.0008, output: 0.004},
     "claude-sonnet-4": { input: 0.003, output: 0.015 },
+    "claude-opus-4": {input: 0.015, output: 0.075},
+    "claude-haiku-4-5": {input: 0.001, output: 0.005},
+    "claude-sonnet-4-5": {input: 0.003, output: 0.015},
+    "claude-opus-4-5": {input: 0.005, output: 0.025},
+
     // openai
     "gpt-4": { input: 0.03, output: 0.06 },
     "gpt-4-turbo": { input: 0.01, output: 0.03 },
