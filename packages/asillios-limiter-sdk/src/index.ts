@@ -185,6 +185,11 @@ export const MODEL_PRICING: Record<string, { input: number; output: number }> =
     "claude-opus-4-5": {input: 0.005, output: 0.025},
 
     // openai
+    "gpt-5.2": {input: 0.00175, output: 0.014},
+    "gpt-5.1": {input: 0.00125, output: 0.010},
+    "gpt-5": {input: 0.00125, output: 0.010},
+    "gpt-5-mini": {input: 0.00025, output: 0.002},
+    "gpt-5-nano": {input: 0.00005, output: 0.0004},
     "gpt-4": { input: 0.03, output: 0.06 },
     "gpt-4-turbo": { input: 0.01, output: 0.03 },
     "gpt-4o": { input: 0.005, output: 0.015 },
