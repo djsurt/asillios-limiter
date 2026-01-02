@@ -292,6 +292,50 @@ function calculateCost(input: number, output: number, model?: string): number {
 }
 
 /**
+ * Validates the limiter configuration.
+ * @internal
+ */
+function validateLimiterConfig(config: LimiterConfig): void {
+  if (config.limit !== undefined && config.limit < 0) {
+    throw new Error("The maximum tokens allowed (limit) must be non-negative.");
+  }
+
+  if (config.window !== undefined && config.window < 0) {
+    throw new Error("The time window (window) must be non-negative.");
+  }
+
+  if (config.burstPercent !== undefined && config.burstPercent < 0) {
+    throw new Error("The burst percentage (burstPercent) must be non-negative.");
+  }
+
+  if (config.costLimit !== undefined && config.costLimit < 0) {
+    throw new Error("The maximum cost in USD (costLimit) must be non-negative.");
+  }
+
+  if (config.thresholds !== undefined) {
+    for (const threshold of config.thresholds) {
+      if (threshold < 0 || threshold > 100) {
+        throw new Error("Threshold percentages must be between 0 and 100.");
+      }
+    }
+  }
+
+  if (config.limits !== undefined) {
+    if (!Array.isArray(config.limits) || config.limits.length === 0) {
+      throw new Error("The limits array must be a non-empty array.");
+    }
+    for (const limit of config.limits) {
+      if (limit.tokens < 0) {
+        throw new Error("Each limit's tokens value must be non-negative.");
+      }
+      if (limit.window < 0) {
+        throw new Error("Each limit's window value must be non-negative.");
+      }
+    }
+  }
+}
+
+/**
  * Creates a token-based rate limiter for LLM API calls.
  *
  * Implements sliding window rate limiting with support for:
@@ -325,15 +369,10 @@ function calculateCost(input: number, output: number, model?: string): number {
  * ```
  */
 export function createLimiter(config: LimiterConfig) {
+  // Validate configuration
+  validateLimiterConfig(config);
 
-  //Validating the LimiterConfig
-  if (config.limit !== undefined && config.limit < 0) {
-    throw new Error("The maximum tokens allowed (limit) must be non-negative.");
-  }
 
-  if(config.window !== undefined && config.window < 0) {
-    throw new Error("The time window (window) must be non-negative.");
-  }
   const storage = config.storage ?? new MemoryStorage();
   const thresholds = config.thresholds ?? [80, 90, 100];
   const burstMultiplier = 1 + (config.burstPercent ?? 0) / 100;
