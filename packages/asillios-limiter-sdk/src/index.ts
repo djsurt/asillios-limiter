@@ -325,6 +325,15 @@ function calculateCost(input: number, output: number, model?: string): number {
  * ```
  */
 export function createLimiter(config: LimiterConfig) {
+
+  //Validating the LimiterConfig
+  if (config.limit !== undefined && config.limit < 0) {
+    throw new Error("The maximum tokens allowed (limit) must be non-negative.");
+  }
+
+  if(config.window !== undefined && config.window < 0) {
+    throw new Error("The time window (window) must be non-negative.");
+  }
   const storage = config.storage ?? new MemoryStorage();
   const thresholds = config.thresholds ?? [80, 90, 100];
   const burstMultiplier = 1 + (config.burstPercent ?? 0) / 100;
