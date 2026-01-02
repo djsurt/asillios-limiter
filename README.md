@@ -18,6 +18,7 @@ asillios-limiter is a typescript library for controlling and monitoring api usag
 
 contribute open source
 **[contributing guidelines](https://github.com/audgeviolin07/asillios-limiter/blob/main/CONTRIBUTING.md)**
+(congrats to @Savy011 and @djsurt)
 
 ## install
 
