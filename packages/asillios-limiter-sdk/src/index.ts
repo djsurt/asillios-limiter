@@ -336,6 +336,16 @@ function validateLimiterConfig(config: LimiterConfig): void {
 }
 
 /**
+ * Validates the user ID.
+ * @param userId
+ */
+function validateUserId(userId: string): void {
+  if (!userId || typeof userId !== 'string' || userId.trim() === '') {
+    throw new Error('userId must be a non-empty string');
+  }
+}
+
+/**
  * Creates a token-based rate limiter for LLM API calls.
  *
  * Implements sliding window rate limiting with support for:
@@ -421,6 +431,7 @@ export function createLimiter(config: LimiterConfig) {
    * @returns true if user is within all limits, false otherwise
    */
   async function check(userId: string): Promise<boolean> {
+    validateUserId(userId);
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
 
@@ -446,6 +457,7 @@ export function createLimiter(config: LimiterConfig) {
    * @returns Number of tokens remaining before hitting the limit
    */
   async function getRemainingTokens(userId: string): Promise<number> {
+    validateUserId(userId);
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
     const primaryLimit = limits[0];
@@ -459,6 +471,7 @@ export function createLimiter(config: LimiterConfig) {
    * @returns Statistics including tokens used, remaining, cost (if enabled), and reset time
    */
   async function stats(userId: string): Promise<UserStats> {
+    validateUserId(userId);
     const data = await getUserData(userId);
     const entries = pruneEntries(data.entries);
     const primaryLimit = limits[0];
@@ -544,6 +557,7 @@ export function createLimiter(config: LimiterConfig) {
     fn: () => Promise<T>,
     options?: { throwOnLimit?: boolean; model?: string }
   ): Promise<T> {
+    validateUserId(userId);
     const withinLimit = await check(userId);
 
     if (!withinLimit && options?.throwOnLimit) {
@@ -587,6 +601,10 @@ export function createLimiter(config: LimiterConfig) {
     tokens: number,
     cost = 0,
   ): Promise<void> {
+    validateUserId(userId);
+    // Ignore non-positive token additions
+    if (tokens <= 0) return;
+    if (cost < 0) cost = 0;
     await recordUsage(userId, tokens, cost);
   }
 
@@ -595,6 +613,7 @@ export function createLimiter(config: LimiterConfig) {
    * @param userId - Unique identifier for the user
    */
   async function reset(userId: string): Promise<void> {
+    validateUserId(userId);
     await storage.delete(userId);
   }
 
