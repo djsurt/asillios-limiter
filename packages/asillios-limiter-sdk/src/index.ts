@@ -603,8 +603,12 @@ export function createLimiter(config: LimiterConfig) {
   ): Promise<void> {
     validateUserId(userId);
     // Ignore non-positive token additions
-    if (tokens <= 0) return;
-    if (cost < 0) cost = 0;
+    if (tokens < 0) {
+      throw new Error("Tokens to add must be non-negative.");
+    }
+    if (cost < 0) {
+      throw new Error("Cost to add must be non-negative.");
+    }
     await recordUsage(userId, tokens, cost);
   }
 
