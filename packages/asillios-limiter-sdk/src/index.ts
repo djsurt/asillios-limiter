@@ -293,6 +293,7 @@ function calculateCost(input: number, output: number, model?: string): number {
 
 /**
  * Validates the limiter configuration.
+ * Tokens cannot be negative, thresholds must be between 0-100, etc.
  * @internal
  */
 function validateLimiterConfig(config: LimiterConfig): void {
