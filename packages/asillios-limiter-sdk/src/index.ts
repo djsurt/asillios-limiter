@@ -46,6 +46,21 @@ export interface UserStats {
 }
 
 /**
+ * A usage history entry with user-friendly formatting.
+ * Returned by getUsageHistory().
+ */
+export interface UsageHistoryEntry {
+  /** Number of tokens consumed */
+  tokens: number;
+
+  /** Estimated cost in USD */
+  cost: number;
+
+  /** When this usage occured */
+  timestamp: Date;
+}
+
+/**
  * A single usage record tracking tokens, cost, and timestamp.
  * Used internally to implement sliding window rate limiting.
  */
@@ -466,6 +481,18 @@ export function createLimiter(config: LimiterConfig) {
     return Math.max(0, primaryLimit.tokens - usage.tokens);
   }
 
+  async function getUsageHistory(userId: string): Promise<UsageHistoryEntry[]> {
+    validateUserId(userId);
+    const data = await getUserData(userId);
+    const entries = pruneEntries(data.entries);
+
+    return entries.map(entry => ({
+      tokens: entry.tokens,
+      cost: entry.cost,
+      timestamp: new Date(entry.timestamp)
+    }));
+  }
+
   /**
    * Gets detailed usage statistics for a user.
    * @param userId - Unique identifier for the user
@@ -622,7 +649,7 @@ export function createLimiter(config: LimiterConfig) {
     await storage.delete(userId);
   }
 
-  return { wrap, check, stats, getRemainingTokens, addTokens, reset };
+  return { wrap, check, stats, getRemainingTokens, addTokens, reset, getUsageHistory };
 }
 
 /**
